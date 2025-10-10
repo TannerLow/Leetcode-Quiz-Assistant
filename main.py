@@ -1,4 +1,5 @@
 import os
+import json
 
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion
@@ -24,7 +25,8 @@ chat_completion_service = OpenAIChatCompletion(
 kernel = Kernel()
 
 # Create the plugin
-neetcode_plugin = NeetcodePlugin('./data')
+user_data_file = './user_data/stats.json'
+neetcode_plugin = NeetcodePlugin('./data', user_data_file)
 
 # Add the plugin to the kernel
 kernel.add_plugin(neetcode_plugin)
@@ -36,12 +38,29 @@ chat_history = ChatHistory()
 execution_settings = OpenAIChatPromptExecutionSettings()
 execution_settings.function_choice_behavior = FunctionChoiceBehavior.Auto()
 
+
 def load_system_prompt(chat_history: ChatHistory) -> None:
     with open("prompt.txt", "r") as file:
         system_prompt: str = file.read().strip()
         chat_history.add_system_message(system_prompt)
 
+
+def setup_user_data(path):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+
+    if not os.path.exists(path):
+
+        with open(path, 'w') as file:
+            initial_data = {
+                "levels": {},
+                "skips": {}
+            }
+            json.dump(initial_data, file)
+            
+
 async def main():
+    setup_user_data(user_data_file)
+
     load_system_prompt(chat_history)
 
     # AI starts the convo
@@ -50,13 +69,14 @@ async def main():
         settings=execution_settings,
         kernel=kernel
     )
-    print("Assistant > " + str(response))
+    print("Assistant > " + str(response), end='\n\n')
     chat_history.add_message(response)
 
     userInput = None
     while True:
         # Collect user input
         userInput = input("User > ")
+        print()
 
         # Terminate the loop if the user says "exit"
         if userInput == "exit":
@@ -75,7 +95,7 @@ async def main():
         )
 
         # Print the results
-        print("Assistant > " + str(response))
+        print("Assistant > " + str(response), end='\n\n')
 
         # Add the message from the agent to the chat history
         chat_history.add_message(response)
