@@ -9,7 +9,7 @@ from semantic_kernel.contents.chat_history import ChatHistory
 import dotenv
 import asyncio
 
-from neetcode_plugin import NeetcodePlugin
+from src.neetcode_plugin import NeetcodePlugin
 
 
 dotenv.load_dotenv()
@@ -75,6 +75,7 @@ async def main():
     userInput = None
     while True:
         # Collect user input
+        print("=" * 20)
         userInput = input("User > ")
         print()
 
@@ -94,11 +95,12 @@ async def main():
             kernel=kernel
         )
 
-        # Print the results
+        print("=" * 20)
         print("Assistant > " + str(response), end='\n\n')
 
         # Add the message from the agent to the chat history
         chat_history.add_message(response)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
