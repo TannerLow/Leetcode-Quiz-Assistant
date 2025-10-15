@@ -54,7 +54,7 @@ class NeetcodePlugin:
 
         weighted_problem_list: list[str] = []
         for name, level in levels.items():
-            for _ in range(level, 6):
+            for _ in range((6 - level)**2):
                 weighted_problem_list.append(name)
 
         index = random.randint(0, len(weighted_problem_list))

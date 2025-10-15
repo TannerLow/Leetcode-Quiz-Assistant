@@ -89,6 +89,7 @@ async def main():
         
         chat_history.add_user_message(userInput)
 
+        print("[AI is thinking...]")
         response = await chat_completion_service.get_chat_message_content(
             chat_history=chat_history,
             settings=execution_settings,
